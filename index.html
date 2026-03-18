@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Suno Gen" />
+  <meta name="description" content="Générateur de chansons Suno AI" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>Suno Gen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fafaf8;
+      --bg2: #f2f1ee;
+      --bg3: #e8e6e1;
+      --text: #1a1916;
+      --text2: #6b6860;
+      --text3: #a09d97;
+      --border: rgba(26,25,22,0.1);
+      --border2: rgba(26,25,22,0.18);
+      --accent: #c8a96e;
+      --accent-bg: rgba(200,169,110,0.12);
+      --pill-active-bg: #1a1916;
+      --pill-active-text: #fafaf8;
+      --section-bg: #f2f1ee;
+      --card-bg: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f0e0c;
+        --bg2: #1a1916;
+        --bg3: #252420;
+        --text: #f0ede6;
+        --text2: #9a9690;
+        --text3: #5a5750;
+        --border: rgba(240,237,230,0.08);
+        --border2: rgba(240,237,230,0.15);
+        --accent: #c8a96e;
+        --accent-bg: rgba(200,169,110,0.1);
+        --pill-active-bg: #f0ede6;
+        --pill-active-text: #0f0e0c;
+        --section-bg: #1a1916;
+        --card-bg: #1a1916;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { background: var(--bg); }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    .app {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+    .header {
+      margin-bottom: 2.5rem;
+      padding-top: 0.5rem;
+    }
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 0.25rem;
+    }
+    .logo {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .logo svg { width: 18px; height: 18px; fill: #0f0e0c; }
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+    .subtitle {
+      font-size: 13px;
+      color: var(--text3);
+      margin-top: 6px;
+      font-weight: 300;
+    }
+    .field { margin-bottom: 1.25rem; }
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+    textarea { resize: none; }
+    textarea:focus, input[type="text"]:focus { border-color: var(--accent); }
+    textarea::placeholder, input::placeholder { color: var(--text3); }
+    .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text2);
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .pill.active {
+      background: var(--pill-active-bg);
+      color: var(--pill-active-text);
+      border-color: var(--pill-active-bg);
+    }
+    .pill:active { transform: scale(0.96); }
+    .gen-btn {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      background: var(--accent);
+      color: #0f0e0c;
+      font-size: 15px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: opacity 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .gen-btn:active { transform: scale(0.98); opacity: 0.85; }
+    .gen-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 0;
+      gap: 16px;
+    }
+    .loading.visible { display: flex; }
+    .bars {
+      display: flex;
+      gap: 4px;
+      align-items: flex-end;
+      height: 28px;
+    }
+    .bar {
+      width: 4px;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: bounce 1s ease-in-out infinite;
+    }
+    .bar:nth-child(1) { animation-delay: 0s; }
+    .bar:nth-child(2) { animation-delay: 0.15s; }
+    .bar:nth-child(3) { animation-delay: 0.3s; }
+    .bar:nth-child(4) { animation-delay: 0.45s; }
+    .bar:nth-child(5) { animation-delay: 0.6s; }
+    @keyframes bounce {
+      0%, 100% { height: 8px; opacity: 0.4; }
+      50% { height: 28px; opacity: 1; }
+    }
+    .loading-text { font-size: 13px; color: var(--text3); font-weight: 300; }
+    .output { display: none; margin-top: 2rem; }
+    .output.visible { display: block; }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+    .output-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      line-height: 1.3;
+    }
+    .section {
+      background: var(--section-bg);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text3);
+    }
+    .copy-btn {
+      font-size: 12px;
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      padding: 2px 6px;
+    }
+    .section-content {
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+      white-space: pre-wrap;
+      font-weight: 300;
+    }
+    .new-btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--text2);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.15s;
+    }
+    .new-btn:active { background: var(--bg2); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 3v10.55A4 4 0 1 0 11 17V7h4V3H9z"/>
+        </svg>
+      </div>
+      <h1>Suno <em>Gen</em></h1>
+    </div>
+    <p class="subtitle">Titre · Paroles · Style · Simple mode · Cover art</p>
+  </div>
+
+  <div id="formSection">
+    <div class="field">
+      <label>Vibe / thème / émotion</label>
+      <textarea id="vibe" rows="3" placeholder="Ex: une chanson R&B sur une attraction intense, ambiance nuit..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Genre</label>
+      <div class="pills" id="genrePills">
+        <button class="pill" onclick="togglePill(this)">French R&B</button>
+        <button class="pill" onclick="togglePill(this)">Pop</button>
+        <button class="pill" onclick="togglePill(this)">Trap Soul</button>
+        <button class="pill" onclick="togglePill(this)">Afrobeats</button>
+        <button class="pill" onclick="togglePill(this)">Dark Pop</button>
+        <button class="pill" onclick="togglePill(this)">Hip-Hop</button>
+        <button class="pill" onclick="togglePill(this)">Électro</button>
+        <button class="pill" onclick="togglePill(this)">Acoustic</button>
+        <button class="pill" onclick="togglePill(this)">Cinematic</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Voix</label>
+      <div class="pills" id="voixPills">
+        <button class="pill" onclick="togglePill(this)">Voix féminine</button>
+        <button class="pill" onclick="togglePill(this)">Voix masculine</button>
+        <button class="pill" onclick="togglePill(this)">Harmonies</button>
+        <button class="pill" onclick="togglePill(this)">Instrumental</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Langue</label>
+      <div class="pills" id="languePills">
+        <button class="pill active" onclick="togglePill(this)">Français</button>
+        <button class="pill" onclick="togglePill(this)">English</button>
+        <button class="pill" onclick="togglePill(this)">Español</button>
+        <button class="pill" onclick="togglePill(this)">Português</button>
+        <button class="pill" onclick="togglePill(this)">Italian</button>
+        <button class="pill" onclick="togglePill(this)">Arabic</button>
+        <button class="pill" onclick="togglePill(this)">German</button>
+        <button class="pill" onclick="togglePill(this)">Japanese</button>
+        <button class="pill" onclick="togglePill(this)">Korean</button>
+        <button class="pill" onclick="togglePill(this)">Hindi</button>
+        <button class="pill" onclick="togglePill(this)">Swahili</button>
+        <button class="pill" onclick="togglePill(this)">Russian</button>
+        <button class="pill" onclick="togglePill(this)">Mandarin</button>
+        <button class="pill" onclick="togglePill(this)">Franglais</button>
+        <button class="pill" onclick="togglePill(this)">Multilingual</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Référence artiste (optionnel)</label>
+      <input type="text" id="reference" placeholder="Ex: The Weeknd, PNL, Awa Imani..." />
+    </div>
+
+    <button class="gen-btn" id="genBtn" onclick="generate()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 3v10.55A4 4 0 1 0 11 17V7h4V3H9z"/></svg>
+      Générer la chanson
+    </button>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="bars">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <p class="loading-text" id="loadingText">Composition en cours...</p>
+  </div>
+
+  <div class="output" id="output">
+    <hr class="divider" />
+    <div class="output-title" id="outputTitle"></div>
+
+    <div class="section">
+      <div class="section-head">
+        <span class="section-label">Paroles — Personnaliser</span>
+        <button class="copy-btn" onclick="copyEl('lyricsOut')">Copier</button>
+      </div>
+      <div class="section-content" id="lyricsOut"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <span class="section-label">Style Prompt</span>
+        <button class="copy-btn" onclick="copyEl('styleOut')">Copier</button>
+      </div>
+      <div class="section-content" id="styleOut"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <span class="section-label">Prompt Simple</span>
+        <button class="copy-btn" onclick="copyEl('simpleOut')">Copier</button>
+      </div>
+      <div class="section-content" id="simpleOut"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <span class="section-label">Cover Art Prompt</span>
+        <button class="copy-btn" onclick="copyEl('coverOut')">Copier</button>
+      </div>
+      <div class="section-content" id="coverOut"></div>
+    </div>
+
+    <button class="new-btn" onclick="reset()">Nouvelle chanson</button>
+  </div>
+</div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+
+  function togglePill(el) { el.classList.toggle('active'); }
+
+  function getActive(id) {
+    return Array.from(document.querySelectorAll('#' + id + ' .pill.active')).map(p => p.textContent).join(', ');
+  }
+
+  function copyEl(id) {
+    const el = document.getElementById(id);
+    navigator.clipboard.writeText(el.textContent).then(() => {
+      const btn = el.closest('.section').querySelector('.copy-btn');
+      const orig = btn.textContent;
+      btn.textContent = 'Copié !';
+      setTimeout(() => btn.textContent = orig, 1500);
+    });
+  }
+
+  const msgs = ['Composition en cours...', 'On cherche les bons mots...', 'Le hook arrive...', 'Finitions du style...'];
+  let msgIdx = 0, msgTimer;
+
+  async function generate() {
+    const vibe = document.getElementById('vibe').value.trim();
+    if (!vibe) { document.getElementById('vibe').focus(); return; }
+
+    const genre = getActive('genrePills');
+    const voix = getActive('voixPills');
+    const langue = getActive('languePills');
+    const ref = document.getElementById('reference').value.trim();
+
+    document.getElementById('genBtn').disabled = true;
+    document.getElementById('loading').classList.add('visible');
+    document.getElementById('output').classList.remove('visible');
+
+    msgIdx = 0;
+    msgTimer = setInterval(() => {
+      msgIdx = (msgIdx + 1) % msgs.length;
+      document.getElementById('loadingText').textContent = msgs[msgIdx];
+    }, 2200);
+
+    const prompt = `Tu es un expert en création de chansons pour Suno AI.
+Génère une chanson complète. Réponds UNIQUEMENT avec un JSON valide, sans backticks, sans texte avant ou après :
+{"titre":"...","paroles":"...","style_prompt":"...","simple_mode":"...","cover_art":"..."}
+
+Paramètres :
+- Vibe/thème : ${vibe}
+- Genre : ${genre || 'libre'}
+- Voix : ${voix || 'libre'}
+- Langue : ${langue || 'Français'}
+- Référence artiste : ${ref || 'aucune'}
+
+Règles paroles : balises Suno [Verse 1], [Chorus], [Bridge], [Outro] etc., backing vocals en (parenthèses), arc émotionnel fort, hooks accrocheurs.
+Style prompt : descripteurs séparés par virgules (genre, mood, voix, tempo, production, référence).
+Simple mode : une phrase naturelle sans balises, à coller directement dans Suno Simple.
+Cover art : prompt cinématique pour Midjourney/DALL-E, se termine par "square format, album cover".`;
+
+    try {
+      const res = await fetch('/.netlify/functions/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      const data = await res.json();
+      const raw = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+      const song = JSON.parse(raw);
+
+      document.getElementById('outputTitle').textContent = song.titre;
+      document.getElementById('lyricsOut').textContent = song.paroles;
+      document.getElementById('styleOut').textContent = song.style_prompt;
+      document.getElementById('simpleOut').textContent = song.simple_mode;
+      document.getElementById('coverOut').textContent = song.cover_art;
+      document.getElementById('output').classList.add('visible');
+      document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch(e) {
+      alert('Erreur lors de la génération. Réessaie.');
+    } finally {
+      clearInterval(msgTimer);
+      document.getElementById('loading').classList.remove('visible');
+      document.getElementById('genBtn').disabled = false;
+    }
+  }
+
+  function reset() {
+    document.getElementById('output').classList.remove('visible');
+    document.getElementById('vibe').value = '';
+    document.querySelectorAll('.pill.active').forEach(p => p.classList.remove('active'));
+    document.querySelector('#languePills .pill').classList.add('active');
+    document.getElementById('reference').value = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
